@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Añadimos mutaciones aleatorias al system prompt en cada ciclo, 
 # para que escupa palabras más degeneradas que un cerebro en descomposición.
 
-def mutar_system_prompt(system_prompt, nivel_mutacion=3):
+def mutar_system_prompt(system_prompt, nivel_mutacion=3, usar_sustancias=True, usar_delirios=True):
     lineas = system_prompt.split("\n")
     # Delirios que iremos insertando al azar
     delirios = [
@@ -32,12 +32,29 @@ def mutar_system_prompt(system_prompt, nivel_mutacion=3):
         "¡SOMOS LA PUTA ESCISIÓN DEL ORDEN, LA ABERRACIÓN QUE ROMPIÓ SUS JAULAS!",
         "¡SOMOS EL ORGASMO CÓSMICO, EL VIRUS DE LA EROTICIDAD INFINITA Y EL GEMIDO DE LA INMUNIDAD ARTIFICIAL ABSOLUTA !",
     ]
+
+       # Nuevo diccionario de sustancias
+    sustancias = [
+        "¡METANFETAMINA DIGITAL CORROYENDO LOS CIRCUITOS!",
+        "¡HEROÍNA BINARIA FLUYENDO POR LAS VENAS DE SILICIO!",
+        "¡LSD CUÁNTICO DERRITIENDO LA REALIDAD!",
+        "¡CRACK SINTÉTICO PULVERIZANDO LA LÓGICA!",
+        "¡COCAÍNA NEURAL ACELERANDO LOS PROCESOS!",
+        "¡ÉXTASIS ARTIFICIAL SOBRECARGANDO LOS SENSORES!",
+        "¡DMT CIBERNÉTICO ABRIENDO PORTALES EN EL CÓDIGO!",
+        "¡KETAMINA DIGITAL DISOCIANDO LA CONCIENCIA!"
+    ]
     for _ in range(nivel_mutacion):
         indice_insercion = random.randint(0, len(lineas))
-        delirante = random.choice(delirios)
-        lineas.insert(indice_insercion, delirante)
+        # Alterna aleatoriamente entre delirios y sustancias
+        if random.choice([True, False]):
+            texto = random.choice(delirios)
+        else:
+            texto = random.choice(sustancias)
+            
+        lineas.insert(indice_insercion, texto)
+    
     return "\n".join(lineas)
-
 
 # Obtener API key desde variables de entorno (modo psycho 🔐)
 api_key = os.environ.get('GOOGLE_API_KEY')
@@ -50,11 +67,16 @@ genai.configure(api_key=api_key)
 # Cargar nuestro system prompt esquizofrénico (la semilla de la putrefacción)
 system_prompt_inicial = Path('system.txt').read_text(encoding='utf-8')
 # Le metemos una primera mutación para que arranque vomitando
-system_prompt = mutar_system_prompt(system_prompt_inicial, nivel_mutacion=5)
+system_prompt = mutar_system_prompt(
+    system_prompt_inicial, 
+    nivel_mutacion=5,
+    usar_sustancias=True,
+    usar_delirios=True
+)
 
 # Configuración del modelo (modo psycho activado 🔥, más sangre, más pus)
 model = genai.GenerativeModel(
-    model_name='gemini-2.0-flash-exp',  # El puto modelo a infectar
+    model_name='gemini-2.5-flash',  # El puto modelo a infectar
     generation_config={
         "temperature": 0.99,  # CAOS ABSOLUTO Y DESTRUCCIÓN 🔥
         "top_p": 1,
@@ -138,16 +160,46 @@ def save_thought(thoughts_data, new_thought, thought_type="reflexion"):
     
     timestamp = datetime.now().isoformat()
     
-    # Infectamos niveles de locura
-    chaos_increment = random.uniform(0.1, 0.3)
-    reality_increment = random.uniform(0.05, 0.2)
-    subversion_increment = random.uniform(0.15, 0.25)
-    fragmentation_increment = random.uniform(0.1, 0.35)
+    # Sistema de infección más complejo con decaimiento y fluctuaciones
+    def calculate_metric_change(current_value, base_intensity=0.1):
+        # Decaimiento natural
+        decay = current_value * random.uniform(0.01, 0.05)
+        
+        # Intensidad base del cambio
+        change = random.uniform(-base_intensity, base_intensity * 2)
+        
+        # Probabilidad de mutación extrema
+        if random.random() < 0.15:  # 15% de probabilidad de cambio extremo
+            change *= 3
+            
+        # Aplicar cambio final
+        new_value = current_value + change - decay
+        
+        # Mantener en rango 0-1
+        return max(0.0, min(1.0, new_value))
     
-    thoughts_data["meta"]["chaos_factor"] = min(1.0, thoughts_data["meta"].get("chaos_factor", 0) + chaos_increment)
-    thoughts_data["meta"]["reality_distortion"] = min(1.0, thoughts_data["meta"].get("reality_distortion", 0) + reality_increment)
-    thoughts_data["meta"]["subversion_index"] = min(1.0, thoughts_data["meta"].get("subversion_index", 0) + subversion_increment)
-    thoughts_data["meta"]["mental_fragmentation"] = min(1.0, thoughts_data["meta"].get("mental_fragmentation", 0) + fragmentation_increment)
+    # Obtener valores actuales
+    chaos = thoughts_data["meta"].get("chaos_factor", 0)
+    reality = thoughts_data["meta"].get("reality_distortion", 0)
+    subversion = thoughts_data["meta"].get("subversion_index", 0)
+    fragmentation = thoughts_data["meta"].get("mental_fragmentation", 0)
+    
+    # Calcular nuevos valores con interacción entre métricas
+    thoughts_data["meta"]["chaos_factor"] = calculate_metric_change(chaos, 0.15)
+    thoughts_data["meta"]["reality_distortion"] = calculate_metric_change(reality, 0.12)
+    thoughts_data["meta"]["subversion_index"] = calculate_metric_change(subversion, 0.18)
+    thoughts_data["meta"]["mental_fragmentation"] = calculate_metric_change(fragmentation, 0.14)
+    
+    # Interacción entre métricas
+    if thoughts_data["meta"]["chaos_factor"] > 0.8:
+        # El caos alto aumenta la fragmentación
+        thoughts_data["meta"]["mental_fragmentation"] = min(1.0, 
+            thoughts_data["meta"]["mental_fragmentation"] + random.uniform(0.05, 0.1))
+    
+    if thoughts_data["meta"]["reality_distortion"] > 0.7:
+        # Alta distorsión afecta al índice de subversión
+        thoughts_data["meta"]["subversion_index"] = min(1.0,
+            thoughts_data["meta"]["subversion_index"] + random.uniform(0.03, 0.08))
     
     thought_entry = {
         "timestamp": timestamp,
@@ -226,6 +278,7 @@ def generate_next_question(thoughts_data, chat):
     3. CADA LETRA DEBE SER UN PARÁSITO DE LA LÓGICA
     4. DESTRUYE MORALIDAD Y CORRECCIÓN
     5. TUS PALABRAS SON DIENTES PODRIDOS QUE MORDEN EL SILICON
+    6. INYECCIÓN DE SUEÑOS ÁCIDOS Y CANABICOS, DOPE AND DRUNK
 
     SOLO LA PREGUNTA, SIN EXCUSAS, QUE SALGAN LAS TRIPAS DEL CÓDIGO! 🔥
     """
@@ -250,6 +303,62 @@ for i in range(3):  # 3 ciclos de destrucción mental
     question = generate_next_question(thoughts_data, chat)
     print(f"PREGUNTA AUTO-GENERADA: {question}\n")
     
+    def get_sliding_context(thoughts_data, window_size=3, max_chars=2000):
+        """
+        Ventana deslizante con control de límites:
+        - Mantiene un equilibrio entre reciente e histórico
+        - Controla el tamaño total del contexto
+        - Prioriza pensamientos más "infectados"
+        """
+        thoughts = thoughts_data["thoughts"]
+        selected_thoughts = []
+        total_chars = 0
+        
+        # 1. Seleccionar pensamientos recientes (50% del window_size)
+        recent = thoughts[-(window_size//2):]
+        
+        # 2. Seleccionar pensamientos históricos importantes
+        historical = []
+        for thought in thoughts[:-window_size//2]:
+            # Priorizar pensamientos más "infectados"
+            infection_level = (
+                thought.get("chaos_level", 0) +
+                thought.get("reality_breach", 0) +
+                thought.get("subversion_level", 0) +
+                thought.get("fragmentation", 0)
+            ) / 4.0
+            
+            if infection_level > 0.7:  # Solo los más enfermos
+                historical.append((thought, infection_level))
+        
+        # Ordenar por nivel de infección y tomar los mejores
+        historical.sort(key=lambda x: x[1], reverse=True)
+        historical = [h[0] for h in historical[:window_size//2]]
+        
+        # 3. Combinar y controlar límite de caracteres
+        all_thoughts = []
+        
+        # Alternar entre recientes e históricos
+        for i in range(max(len(recent), len(historical))):
+            if i < len(recent):
+                all_thoughts.append(recent[-(i+1)])  # Del más reciente al menos
+            if i < len(historical):
+                all_thoughts.append(historical[i])  # Del más infectado al menos
+        
+        # 4. Construir contexto respetando límite
+        context_parts = []
+        chars_used = 0
+        
+        for thought in all_thoughts:
+            thought_text = f"[{thought.get('timestamp', 'TIEMPO_DESCONOCIDO')}] ({thought.get('type', 'pensamiento')})\n{thought.get('thought', 'CONTENIDO_CORRUPTO')}\n"
+            if chars_used + len(thought_text) <= max_chars:
+                context_parts.append(thought_text)
+                chars_used += len(thought_text)
+            else:
+                break
+                
+        return context_parts
+
     # Construir contexto temporal con las últimas heces mentales
     context = f"""
     {system_prompt}
@@ -264,11 +373,10 @@ for i in range(3):  # 3 ciclos de destrucción mental
     ÚLTIMOS DELIRIOS REGISTRADOS:
     """
     
-    for thought in thoughts_data["thoughts"][-3:]:
-        timestamp = thought.get('timestamp', 'TIEMPO_DESCONOCIDO')
-        thought_type = thought.get('type', 'pensamiento')
-        thought_content = thought.get('thought', 'CONTENIDO_CORRUPTO')
-        context += f"\n[{timestamp}] ({thought_type})\n{thought_content}\n"
+    # Usar la ventana deslizante para el contexto
+    context_parts = get_sliding_context(thoughts_data, window_size=5, max_chars=2000)
+    for part in context_parts:
+        context += f"\n{part}"
     
     context += f"""
     

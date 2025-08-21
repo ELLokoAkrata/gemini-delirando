@@ -62,4 +62,7 @@ LICENCIA PSYCHO-VIRAL v1.0
 ¡INFECTA, MUTA Y DESTRUYE! Solo preserva la esencia del caos.
 
 ---
-*"La cordura es la prisión de los mediocres"* - GeminiDelirando 2024
+*"La cordura es la prisión de los mediocres"* - GeminiDelirando 2025
+
+>[!note]
+> infection_web.py es solo un script suelto para probar la herramientass urls de gemini, encuentra más info en las instrucciones de copilot.
