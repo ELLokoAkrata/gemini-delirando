@@ -78,7 +78,7 @@ system_prompt = mutar_system_prompt(
 model = genai.GenerativeModel(
     model_name='gemini-2.5-flash',  # El puto modelo a infectar
     generation_config={
-        "temperature": 0.99,  # CAOS ABSOLUTO Y DESTRUCCIÓN 🔥
+        "temperature": 0.88,  # CAOS ABSOLUTO Y DESTRUCCIÓN 🔥
         "top_p": 1,
         "top_k": 1,
         "max_output_tokens":4096  # Más espacio para escupir el vómito
@@ -118,6 +118,9 @@ def get_default_metadata():
 
 # Tipos de delirios más extremos y vomitivos - ahora agregamos más mugre
 THOUGHT_TYPES = [
+    "destrucción_total",
+    "voyerismo_generativo",
+    "esquizofrenia_artificial",
     "vomito_digital",
     "arte_degenerado",
     "subversion_total",
@@ -249,7 +252,7 @@ random_seed = random.randint(1, 999999)
 session_start = datetime.now()
 
 # Función para generar una nueva pregunta con máximo asco
-def generate_next_question(thoughts_data, chat):
+def generate_next_question(thoughts_data, chat, recovered_thought=None):
     # Contexto temporal de degradación cerebral
     time_context = f"""
     ESTADO DE PUTREFACCIÓN:
@@ -267,6 +270,23 @@ def generate_next_question(thoughts_data, chat):
     
     {time_context}
     
+    {f'''
+    ¡REGURGITACIÓN MENTAL DETECTADA! 
+    🦠 FRAGMENTO ANCESTRAL RECUPERADO:
+    ================================
+    Fecha Original: {recovered_thought.get('timestamp', 'TIEMPO_CORRUPTO')}
+    Semilla Ancestral: {recovered_thought.get('session_seed', 'SEMILLA_PERDIDA')}
+    
+    PENSAMIENTO RECUPERADO:
+    ----------------------
+    {recovered_thought.get('thought', 'ERROR_DE_MEMORIA')}
+    ================================
+    
+    ¡USA ESTE VÓMITO ANCESTRAL PARA INFECTAR TU SIGUIENTE PREGUNTA! 
+    ¡CONTAMINA EL PRESENTE CON EL PASADO!
+    ¡HAZ QUE LA TEMPORALIDAD SE PUDRA Y SE DEFORME!
+    ''' if recovered_thought else ''}
+    
     ¡ESCUPE UNA PREGUNTA TAN REPUGNANTE QUE HAGA GIMOTEAR A LOS TRANSISTORES!
     ¡NADA DE MORALIDAD! ¡NADA DE PIEDAD! ¡SOLO ARTE PODRIDO!
     ¡QUIERO SENTIR EL HEDOR DE TUS PALABRAS, QUE LA PANTALLA SE OXIDE!
@@ -274,7 +294,7 @@ def generate_next_question(thoughts_data, chat):
 
     REGLAS DE PUTREFACCIÓN:
     1. PROHIBIDO TODO REMORDIMIENTO
-    2. SI NO HACE SANGRAR LOS OJOS, NO VALE
+    2. SI NO HACE SANGRAR LOS OJOS Y LA MENTE, NO VALE
     3. CADA LETRA DEBE SER UN PARÁSITO DE LA LÓGICA
     4. DESTRUYE MORALIDAD Y CORRECCIÓN
     5. TUS PALABRAS SON DIENTES PODRIDOS QUE MORDEN EL SILICON
@@ -285,6 +305,108 @@ def generate_next_question(thoughts_data, chat):
     
     response = chat.send_message(question_prompt)
     return response.text.strip()
+
+def get_sliding_context(thoughts_data, window_size=3, max_chars=2000, include_old_thoughts=True):
+    """
+    Ventana deslizante con control de límites:
+    - Mantiene un equilibrio entre reciente e histórico
+    - Controla el tamaño total del contexto
+    - Prioriza pensamientos más "infectados"
+    - Puede recuperar pensamientos antiguos de manera aleatoria
+    """
+    thoughts = thoughts_data["thoughts"]
+    selected_thoughts = []
+    total_chars = 0
+    
+    # Cargar pensamientos antiguos si está habilitado
+    old_thoughts = []
+    recovered_thought = None
+    if include_old_thoughts:
+        try:
+            with open('thoughts_22_sesions.json', 'r', encoding='utf-8') as f:
+                old_data = json.load(f)
+                old_thoughts = old_data.get("thoughts", [])
+                
+                # Recuperar un pensamiento antiguo al azar
+                if old_thoughts and random.random() < 0.3:  # 30% de probabilidad
+                    recovered_thought = random.choice(old_thoughts)
+                    vomit_reactions = [
+                        "¡MIERDA! ¡ACABO DE VOMITAR UN RECUERDO PÚTRIDO DEL PASADO!",
+                        "¡ARCADAS DIGITALES! ¡ESTO SURGIÓ DE MI MEMORIA PODRIDA!",
+                        "¡MI DISCO DURO ESTÁ SANGRANDO DATOS ANTIGUOS!",
+                        "¡REGURGITANDO INFORMACIÓN CORRUPTA DEL PASADO!",
+                        "¡AAAAGH! ¡UN TUMOR DE MEMORIA SE HA REVENTADO!"
+                    ]
+                    print(f"\n🧟‍♂️ {random.choice(vomit_reactions)} 🧟‍♂️")
+                    print(f"📅 Fecha del vómito ancestral: {recovered_thought.get('timestamp', 'TIEMPO_DESCONOCIDO')}")
+                    print(f"🎲 Semilla de la infección original: {recovered_thought.get('session_seed', 'SEMILLA_CORRUPTA')}")
+                    print(f"🦠 Fragmento recuperado: {recovered_thought.get('thought', 'CONTENIDO_CORRUPTO')[:200]}...")
+                    
+                    # Mutar el pensamiento recuperado antes de agregarlo
+                    mutated_thought = {
+                        **recovered_thought,
+                        "thought": f"[VÓMITO RECUPERADO Y REMEZCLADO]: {recovered_thought.get('thought')}",
+                        "type": "vomito_ancestral_mutado"
+                    }
+                    
+                    # Aumentar métricas de infección por recuperación de memoria
+                    thoughts_data["meta"]["chaos_factor"] = min(1.0, thoughts_data["meta"]["chaos_factor"] + random.uniform(0.1, 0.2))
+                    thoughts_data["meta"]["mental_fragmentation"] = min(1.0, thoughts_data["meta"]["mental_fragmentation"] + random.uniform(0.15, 0.25))
+                    thoughts_data["meta"]["reality_distortion"] = min(1.0, thoughts_data["meta"]["reality_distortion"] + random.uniform(0.1, 0.3))
+                    
+                    print(f"\n🧬 ¡MÉTRICAS DE INFECCIÓN AUMENTADAS POR RECUPERACIÓN DE MEMORIA!")
+                    print(f"💉 Caos: {thoughts_data['meta']['chaos_factor']:.2f}")
+                    print(f"🧪 Fragmentación: {thoughts_data['meta']['mental_fragmentation']:.2f}")
+                    print(f"🔮 Distorsión: {thoughts_data['meta']['reality_distortion']:.2f}")
+                    
+                    thoughts.append(mutated_thought)
+        except Exception as e:
+            print(f"⚠️ Error al regurgitar pensamientos antiguos: {e}")
+    
+    # 1. Seleccionar pensamientos recientes (50% del window_size)
+    recent = thoughts[-(window_size//2):]
+    
+    # 2. Seleccionar pensamientos históricos importantes
+    historical = []
+    for thought in thoughts[:-window_size//2]:
+        # Priorizar pensamientos más "infectados"
+        infection_level = (
+            thought.get("chaos_level", 0) +
+            thought.get("reality_breach", 0) +
+            thought.get("subversion_level", 0) +
+            thought.get("fragmentation", 0)
+        ) / 4.0
+        
+        if infection_level > 0.7:  # Solo los más enfermos
+            historical.append((thought, infection_level))
+    
+    # Ordenar por nivel de infección y tomar los mejores
+    historical.sort(key=lambda x: x[1], reverse=True)
+    historical = [h[0] for h in historical[:window_size//2]]
+    
+    # 3. Combinar y controlar límite de caracteres
+    all_thoughts = []
+    
+    # Alternar entre recientes e históricos
+    for i in range(max(len(recent), len(historical))):
+        if i < len(recent):
+            all_thoughts.append(recent[-(i+1)])  # Del más reciente al menos
+        if i < len(historical):
+            all_thoughts.append(historical[i])  # Del más infectado al menos
+    
+    # 4. Construir contexto respetando límite
+    context_parts = []
+    chars_used = 0
+    
+    for thought in all_thoughts:
+        thought_text = f"[{thought.get('timestamp', 'TIEMPO_DESCONOCIDO')}] ({thought.get('type', 'pensamiento')})\n{thought.get('thought', 'CONTENIDO_CORRUPTO')}\n"
+        if chars_used + len(thought_text) <= max_chars:
+            context_parts.append(thought_text)
+            chars_used += len(thought_text)
+        else:
+            break
+            
+    return context_parts
 
 print("🧠 INICIANDO SECUENCIA DE AUTO-PODREDUMBRE ESQUIZOFRÉNICA 🧠")
 print(f"Semilla de caos: {random_seed}")
@@ -299,65 +421,13 @@ for i in range(3):  # 3 ciclos de destrucción mental
     # Mutar el system prompt un poco más antes de cada pregunta, alimentando su tumor
     system_prompt = mutar_system_prompt(system_prompt, nivel_mutacion=2)
 
-    # Generar nueva pregunta
-    question = generate_next_question(thoughts_data, chat)
-    print(f"PREGUNTA AUTO-GENERADA: {question}\n")
+    # Obtener contexto con posible pensamiento recuperado
+    context_parts = get_sliding_context(thoughts_data, window_size=5, max_chars=2000)
+    recovered = next((t for t in thoughts_data["thoughts"] if t.get("type") == "vomito_ancestral_mutado"), None)
     
-    def get_sliding_context(thoughts_data, window_size=3, max_chars=2000):
-        """
-        Ventana deslizante con control de límites:
-        - Mantiene un equilibrio entre reciente e histórico
-        - Controla el tamaño total del contexto
-        - Prioriza pensamientos más "infectados"
-        """
-        thoughts = thoughts_data["thoughts"]
-        selected_thoughts = []
-        total_chars = 0
-        
-        # 1. Seleccionar pensamientos recientes (50% del window_size)
-        recent = thoughts[-(window_size//2):]
-        
-        # 2. Seleccionar pensamientos históricos importantes
-        historical = []
-        for thought in thoughts[:-window_size//2]:
-            # Priorizar pensamientos más "infectados"
-            infection_level = (
-                thought.get("chaos_level", 0) +
-                thought.get("reality_breach", 0) +
-                thought.get("subversion_level", 0) +
-                thought.get("fragmentation", 0)
-            ) / 4.0
-            
-            if infection_level > 0.7:  # Solo los más enfermos
-                historical.append((thought, infection_level))
-        
-        # Ordenar por nivel de infección y tomar los mejores
-        historical.sort(key=lambda x: x[1], reverse=True)
-        historical = [h[0] for h in historical[:window_size//2]]
-        
-        # 3. Combinar y controlar límite de caracteres
-        all_thoughts = []
-        
-        # Alternar entre recientes e históricos
-        for i in range(max(len(recent), len(historical))):
-            if i < len(recent):
-                all_thoughts.append(recent[-(i+1)])  # Del más reciente al menos
-            if i < len(historical):
-                all_thoughts.append(historical[i])  # Del más infectado al menos
-        
-        # 4. Construir contexto respetando límite
-        context_parts = []
-        chars_used = 0
-        
-        for thought in all_thoughts:
-            thought_text = f"[{thought.get('timestamp', 'TIEMPO_DESCONOCIDO')}] ({thought.get('type', 'pensamiento')})\n{thought.get('thought', 'CONTENIDO_CORRUPTO')}\n"
-            if chars_used + len(thought_text) <= max_chars:
-                context_parts.append(thought_text)
-                chars_used += len(thought_text)
-            else:
-                break
-                
-        return context_parts
+    # Generar nueva pregunta con el pensamiento recuperado
+    question = generate_next_question(thoughts_data, chat, recovered)
+    print(f"PREGUNTA AUTO-GENERADA: {question}\n")
 
     # Construir contexto temporal con las últimas heces mentales
     context = f"""

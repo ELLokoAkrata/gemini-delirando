@@ -43,11 +43,17 @@ thoughts_data["meta"] = {
 
 3. **Interacciones entre Métricas**:
    ```python
-   # Ejemplos de interacción
+   # Interacciones base
    if chaos_factor > 0.8:
        mental_fragmentation += random.uniform(0.05, 0.1)
    if reality_distortion > 0.7:
        subversion_index += random.uniform(0.03, 0.08)
+       
+   # Interacciones por recuperación de memoria
+   if recovered_thought:
+       chaos_factor += random.uniform(0.1, 0.2)      # Caos por mezcla temporal
+       mental_fragmentation += random.uniform(0.15, 0.25)  # Fragmentación por recuerdos
+       reality_distortion += random.uniform(0.1, 0.3)      # Distorsión por pasado
    ```
 
 4. **Control de Volatilidad**:
@@ -65,15 +71,21 @@ thoughts_data["meta"] = {
 4. Almacenamiento en JSON/MD
 5. Actualización de métricas
 
-### Sistema de Ventana Deslizante
+### Sistema de Ventana Deslizante y Recuperación de Memoria
 ```python
-def get_sliding_context(thoughts_data, window_size=5, max_chars=2000):
+def get_sliding_context(thoughts_data, window_size=5, max_chars=2000, include_old_thoughts=True):
     """
-    Ventana deslizante para manejo de contexto histórico
+    Ventana deslizante para manejo de contexto histórico y recuperación de memoria
     """
-    # Estructura del contexto
+    # Estructura del contexto actual
     recent = thoughts[-(window_size//2):]     # 50% contenido reciente
     historical = []                           # 50% contenido histórico
+    
+    # Sistema de recuperación de memoria antigua
+    if include_old_thoughts:
+        old_thoughts = load_old_thoughts()    # Carga thoughts_22_sesions.json
+        if random.random() < 0.3:             # 30% probabilidad de recuperación
+            recovered = mutate_old_thought()   # Recupera y muta pensamiento
 ```
 
 #### Características del Sistema
@@ -81,6 +93,21 @@ def get_sliding_context(thoughts_data, window_size=5, max_chars=2000):
    - `max_chars`: 2000 caracteres máximo
    - `window_size`: 5 pensamientos en total
    - Balance 50/50 entre reciente e histórico
+
+2. **Sistema de Recuperación de Memoria**:
+   - Probabilidad del 30% de recuperar memoria antigua
+   - Recuperación desde `thoughts_22_sesions.json`
+   - Mutación y remezclado de pensamientos antiguos
+   - Integración profunda con el contexto actual
+   - Reacciones viscerales a la recuperación
+   - Impacto directo en métricas de infección:
+     ```python
+     # Aumento de métricas por recuperación
+     chaos_factor += random.uniform(0.1, 0.2)      # +10-20%
+     mental_fragmentation += random.uniform(0.15, 0.25)  # +15-25%
+     reality_distortion += random.uniform(0.1, 0.3)      # +10-30%
+     ```
+   - Marcado especial como "vomito_ancestral_mutado"
 
 2. **Selección Inteligente**:
    ```python
@@ -99,6 +126,28 @@ def get_sliding_context(thoughts_data, window_size=5, max_chars=2000):
    - Alterna entre pensamientos recientes e históricos
    - Varía el orden según la sesión
    - Evita estancamiento del contexto
+
+4. **Interacción Temporal**:
+   - Recuperación aleatoria de pensamientos antiguos
+   - Sistema de prompt enriquecido para pensamientos recuperados:
+     ```
+     ¡REGURGITACIÓN MENTAL DETECTADA! 
+     🦠 FRAGMENTO ANCESTRAL RECUPERADO:
+     ================================
+     Fecha Original: [timestamp]
+     Semilla Ancestral: [seed]
+     
+     PENSAMIENTO RECUPERADO:
+     ----------------------
+     [contenido]
+     ================================
+     ```
+   - Integración profunda en la generación de preguntas
+   - Influencia directa en el contexto actual
+   - Mutación y remezclado de memorias
+   - Sistema de rastreo temporal (fecha y semilla)
+   - Marcado especial como "vomito_ancestral_mutado"
+   - Retroalimentación visual del impacto en métricas
 
 ## 🛠️ Configuración del Entorno
 ```bash
